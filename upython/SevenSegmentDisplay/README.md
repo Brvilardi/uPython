@@ -25,7 +25,8 @@ for i in range(10):
     display.set_number(i)
     time.sleep(1)
 ```
-
+Example code to display numbers from 0 to 9.
+![hippo](../../images/seven_segment_display.gif)
 
 
 
