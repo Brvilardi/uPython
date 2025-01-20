@@ -1,19 +1,14 @@
-from time import sleep
+import time
+from upython.SevenSegmentDisplay.SSD_5011BS import SSD_5011BS
 
-from machine import Pin
 
-print("Hello World!")
+display = SSD_5011BS(common_cathode=False)
 
-from upython.LED import LED
-print("LED imported")
 
-# Create a Pin object for the built-in LED
-led = LED()
+for i in range(10):
+    display.set_number(i)
+    time.sleep(1)
 
-# Turn the LED on
-while(1):
-    print("Blinking!!!!")
-    led.blink()
 
 
 # Turn the LED off
