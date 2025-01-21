@@ -29,4 +29,14 @@ Example code to display numbers from 0 to 9.
 ![](../../images/seven_segment_test.gif)
 
 
+Pin | Segment | 
+--- | --- | 
+GP19 | a |
+GP18 | b |
+GP12 | c |
+GP15 | d |
+GP14 | e |
+GP16 | f |
+GP17 | g |
+GP13 | dot |
 
