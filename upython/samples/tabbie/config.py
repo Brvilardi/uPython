@@ -1,0 +1,3 @@
+WIFI_SSID = "BrunoV"
+WIFI_PASSWORD = "CloudComCafe"
+SERVER_URL = "http://192.168.15.109:8000"

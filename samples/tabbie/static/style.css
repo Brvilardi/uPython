@@ -1,0 +1,152 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #1a1a2e;
+  color: #eee;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.container {
+  max-width: 420px;
+  width: 100%;
+}
+
+h1 {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  color: #e94560;
+}
+
+section {
+  background: #16213e;
+  border-radius: 12px;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+section h2 {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+  color: #0f3460;
+  background: #e94560;
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+}
+
+/* Expression buttons */
+.expr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.expr-grid button {
+  padding: 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: #0f3460;
+  color: #eee;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.expr-grid button:hover { background: #e94560; }
+.expr-grid button.active { background: #e94560; }
+
+/* Pomodoro */
+.pomo-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pomo-controls input[type="text"] {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #0f3460;
+  background: #1a1a2e;
+  color: #eee;
+  font-size: 0.9rem;
+}
+
+.pomo-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pomo-row select {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #0f3460;
+  background: #1a1a2e;
+  color: #eee;
+}
+
+.pomo-row button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #e94560;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.pomo-row button:hover { opacity: 0.85; }
+.pomo-row button.stop { background: #555; }
+
+.pomo-status {
+  text-align: center;
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+  padding: 0.4rem 0;
+  color: #aaa;
+}
+
+.pomo-status.active { color: #e94560; }
+
+/* Notify */
+.notify-form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.notify-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #0f3460;
+  background: #1a1a2e;
+  color: #eee;
+  font-size: 0.9rem;
+}
+
+.notify-form button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: #e94560;
+  color: #fff;
+  cursor: pointer;
+}
+
+.notify-form button:hover { opacity: 0.85; }
+
+/* Queue */
+.queue-list {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #666;
+  padding: 0.4rem 0;
+}
+
+.queue-list.has-items { color: #e94560; }

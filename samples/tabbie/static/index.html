@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabbie</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Tabbie</h1>
+
+    <!-- Expressions -->
+    <section>
+      <h2>Expression</h2>
+      <div class="expr-grid" id="exprGrid">
+        <button data-expr="idle" class="active">Idle</button>
+        <button data-expr="focus">Focus</button>
+        <button data-expr="break_time">Break</button>
+        <button data-expr="love">Love</button>
+        <button data-expr="angry">Angry</button>
+        <button data-expr="complete">Complete</button>
+      </div>
+    </section>
+
+    <!-- Pomodoro -->
+    <section>
+      <h2>Pomodoro</h2>
+      <div class="pomo-controls">
+        <input type="text" id="pomoTask" placeholder="Task name">
+        <div class="pomo-row">
+          <select id="pomoDuration">
+            <option value="15">15 min</option>
+            <option value="25" selected>25 min</option>
+            <option value="45">45 min</option>
+          </select>
+          <button id="pomoStart">Start</button>
+          <button id="pomoStop" class="stop">Stop</button>
+        </div>
+        <div class="pomo-status" id="pomoStatus">--:--</div>
+      </div>
+    </section>
+
+    <!-- Notifications -->
+    <section>
+      <h2>Notify</h2>
+      <div class="notify-form">
+        <input type="text" id="notifyText" placeholder="Message for Tabbie">
+        <button id="notifySend">Send</button>
+      </div>
+    </section>
+
+    <!-- Queue -->
+    <section>
+      <h2>Queue</h2>
+      <div id="queueList" class="queue-list">Empty</div>
+    </section>
+  </div>
+
+<script>
+const API = '';
+
+// ── Expressions ──
+document.getElementById('exprGrid').addEventListener('click', async (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  const expr = btn.dataset.expr;
+  await fetch(`${API}/api/expression`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({expression: expr}),
+  });
+  document.querySelectorAll('.expr-grid button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+});
+
+// ── Pomodoro ──
+document.getElementById('pomoStart').addEventListener('click', async () => {
+  const task = document.getElementById('pomoTask').value;
+  const duration = parseInt(document.getElementById('pomoDuration').value);
+  await fetch(`${API}/api/pomodoro/start`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({task, duration}),
+  });
+});
+
+document.getElementById('pomoStop').addEventListener('click', async () => {
+  await fetch(`${API}/api/pomodoro/stop`, {method: 'POST'});
+});
+
+function formatTime(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+setInterval(async () => {
+  try {
+    const res = await fetch(`${API}/api/status`);
+    const data = await res.json();
+
+    // Pomodoro
+    const el = document.getElementById('pomoStatus');
+    if (data.pomodoro.active) {
+      const label = data.pomodoro.phase === 'focus' ? 'Focus' : 'Break';
+      el.textContent = `${label} ${formatTime(data.pomodoro.remaining)}`;
+      el.className = 'pomo-status active';
+    } else {
+      el.textContent = '--:--';
+      el.className = 'pomo-status';
+    }
+
+    // Expression highlight
+    document.querySelectorAll('.expr-grid button').forEach(b => {
+      b.classList.toggle('active', b.dataset.expr === data.expression);
+    });
+
+    // Queue
+    const queueEl = document.getElementById('queueList');
+    if (data.queue.length === 0) {
+      queueEl.textContent = 'Empty';
+      queueEl.className = 'queue-list';
+    } else {
+      queueEl.textContent = data.queue.join(' → ');
+      queueEl.className = 'queue-list has-items';
+    }
+  } catch {}
+}, 1000);
+
+// ── Notify ──
+document.getElementById('notifySend').addEventListener('click', async () => {
+  const input = document.getElementById('notifyText');
+  const text = input.value.trim();
+  if (!text) return;
+  await fetch(`${API}/api/notify`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text}),
+  });
+  input.value = '';
+});
+</script>
+</body>
+</html>

@@ -72,17 +72,18 @@ class ESP07:
     def _http_request(self, host, port, request, use_ssl):
         conn_type = "SSL" if use_ssl else "TCP"
         cmd = 'AT+CIPSTART="{}","{}",{}'.format(conn_type, host, port)
-        if not self._send_cmd(cmd, expected="OK", timeout=10):
+        if not self._send_cmd(cmd, expected="OK", timeout=5):
             return None
 
         send_cmd = "AT+CIPSEND={}".format(len(request))
-        if not self._send_cmd(send_cmd, expected=">", timeout=5):
-            self._send_cmd("AT+CIPCLOSE", timeout=2)
+        if not self._send_cmd(send_cmd, expected=">", timeout=3):
+            self._send_cmd("AT+CIPCLOSE", timeout=1)
             return None
 
         self.uart.write(request)
-        response = self._read_response(timeout=10)
-        self._send_cmd("AT+CIPCLOSE", timeout=2)
+        response = self._read_response(timeout=5, stop_on="CLOSED")
+        if response is None or "CLOSED" not in response:
+            self._send_cmd("AT+CIPCLOSE", timeout=1)
 
         if response is None:
             return None
@@ -99,18 +100,24 @@ class ESP07:
         self.uart.write(cmd + "\r\n")
         return self._read_response(timeout=timeout)
 
-    def _read_response(self, timeout=5):
+    def _read_response(self, timeout=5, stop_on=None):
         start = time.ticks_ms()
         deadline = timeout * 1000
+        idle_start = start
         data = b""
         while time.ticks_diff(time.ticks_ms(), start) < deadline:
             if self.uart.any():
                 chunk = self.uart.read()
                 if chunk:
                     data += chunk
-                    start = time.ticks_ms()
+                    idle_start = time.ticks_ms()
+                    if stop_on and stop_on in data.decode("utf-8", "ignore"):
+                        break
             else:
-                time.sleep_ms(50)
+                # Only wait 500ms of silence after receiving data
+                if data and time.ticks_diff(time.ticks_ms(), idle_start) > 500:
+                    break
+                time.sleep_ms(10)
         if not data:
             return None
         try:
